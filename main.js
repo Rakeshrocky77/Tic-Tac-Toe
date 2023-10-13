@@ -4,17 +4,24 @@ const WINNING_COMBINATIONS = [ [0,1,2],[3,4,5],[6,7,8,],[0,3,6],[1,4,7],[2,5,8],
 const cellElements = document.querySelectorAll('[data-cell]')
 const board = document.getElementById('board')
 const winningMessageElement = document.getElementById('winningMessage')
+const restartButton = document.getElementById('restartButton')
 const winningMessageTextElement = document.querySelectorAll('data-winnig-messagr-text')
 let circleTurn
 
 startGame()
 
+restartButton.addEventListener('click', restartButton)
+
 function startGame() {
     circleTurn = false
     cellElements.forEach( cell => {
+        cell.classList.remove(X_CLASS)
+        cell.classList.remove(CIRCLE_CLASS)
+        cell.removeEventListener('click', handleClick)
         cell.addEventListener('click', handleClick, { once: true})
     })
     setBoardHoverClass()
+    winningMessageElement.classList.remove('show')
 }
 
 function handleClick(e) {
@@ -23,19 +30,26 @@ function handleClick(e) {
    placeMark(cell,currentClass)    
    if(checkWin(currentClass)) {
      endGame(false)
+   } else if (isDraw()) {
+   } else {
+    swapTurns()
+    setBoardHoverClass()
    }
-   swapTurns()
-   setBoardHoverClass()
-
 }
 
 function endGame(draw) {
    if(draw) {
-
+    winningMessageElement.innerText = 'Draw!'
    } else {
     winningMessageTextElement.innerText =`${circleTurn ? "o's" : "X's"} Wins!`
    }
-   winningMessageElement.classList.add('show')
+   winningMessageElement.classList.add('show');
+}
+
+function isDraw() {
+    return[...cellElements].every(cell =>{
+        return cell.classList.contains(X_CLASS) || cell.classList.contains(CIRCLE_CLASS)
+    })
 }
 
 function placeMark(cell,currentClass) {
